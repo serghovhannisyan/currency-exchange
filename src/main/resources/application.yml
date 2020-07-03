@@ -1,0 +1,6 @@
+app:
+  jwt:
+    signing-key: somestrongkey
+    claim-name: scopes
+    expiration: 86400000
+    token-prefix: Bearer
