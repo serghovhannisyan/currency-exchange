@@ -1,4 +1,4 @@
-package com.serg.currencyexchange.service;
+package com.serg.currencyexchange.service.user;
 
 import com.serg.currencyexchange.dto.UserDto;
 import com.serg.currencyexchange.exception.NotFoundException;

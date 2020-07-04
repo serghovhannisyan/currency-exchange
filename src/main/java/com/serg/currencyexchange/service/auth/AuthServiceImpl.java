@@ -1,4 +1,4 @@
-package com.serg.currencyexchange.service;
+package com.serg.currencyexchange.service.auth;
 
 import com.serg.currencyexchange.dto.SignInRequestDto;
 import com.serg.currencyexchange.dto.SignInResponseDto;
