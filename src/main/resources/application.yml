@@ -4,3 +4,12 @@ app:
     claim-name: scopes
     expiration: 86400000
     token-prefix: Bearer
+
+currency-exchange:
+  exchange-rate:
+    api-key: a748d31bfa244a793bec79fb
+    base-url: https://v6.exchangerate-api.com/v6
+    path: /${currency-exchange.exchange-rate.api-key}/latest/{currency}
+  rates:
+    base-url: https://api.ratesapi.io/api
+    path: /latest?base={currency}
