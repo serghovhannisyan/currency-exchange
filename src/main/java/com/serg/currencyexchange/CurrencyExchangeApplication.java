@@ -1,7 +1,9 @@
 package com.serg.currencyexchange;
 
+import com.serg.currencyexchange.model.Currency;
 import com.serg.currencyexchange.model.Role;
 import com.serg.currencyexchange.model.User;
+import com.serg.currencyexchange.repository.CurrencyRepository;
 import com.serg.currencyexchange.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -22,16 +24,28 @@ public class CurrencyExchangeApplication {
     }
 
     @Bean
-    public CommandLineRunner init(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-        return args -> userRepository.save(new User(
-                null,
-                "admin",
-                passwordEncoder.encode("password"),
-                "Serg",
-                new HashSet<>(Arrays.asList(
-                        new Role("USER", "Simple role"),
-                        new Role("ADMIN", "Privileged role")))))
-                .subscribe(user -> log.info("Admin created"));
+    public CommandLineRunner init(UserRepository userRepository,
+                                  CurrencyRepository currencyRepository,
+                                  BCryptPasswordEncoder passwordEncoder) {
+        return args -> {
+            userRepository.save(new User(
+                    null,
+                    "admin",
+                    passwordEncoder.encode("password"),
+                    "Serg",
+                    new HashSet<>(Arrays.asList(
+                            new Role("USER", "Simple role"),
+                            new Role("ADMIN", "Privileged role")))))
+                    .subscribe(user -> log.info("Admin created"));
+
+            currencyRepository.saveAll(
+                    Arrays.asList(
+                            new Currency(null, "USD", true),
+                            new Currency(null, "EUR", true),
+                            new Currency(null, "AMD", true)))
+                    .doOnComplete(() -> log.info("Currencies created"))
+                    .subscribe();
+        };
     }
 
 }

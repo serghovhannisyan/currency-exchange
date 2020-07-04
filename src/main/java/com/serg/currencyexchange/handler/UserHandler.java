@@ -1,15 +1,16 @@
 package com.serg.currencyexchange.handler;
 
 import com.serg.currencyexchange.dto.UserDto;
-import com.serg.currencyexchange.exception.NotFoundException;
-import com.serg.currencyexchange.service.UserService;
+import com.serg.currencyexchange.exception.ExceptionMapper;
+import com.serg.currencyexchange.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 @Slf4j
@@ -23,21 +24,16 @@ public class UserHandler {
 
     public Mono<ServerResponse> getAllUsers(ServerRequest request) {
         Flux<UserDto> allUsers = userService.getAllUsers();
-        return ServerResponse.ok().body(allUsers, UserDto.class);
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(allUsers, UserDto.class);
     }
 
     public Mono<ServerResponse> deleteUser(ServerRequest request) {
-        return userService.deleteUser(request.pathVariable("id"))
+        String id = request.pathVariable("id");
+        return userService.deleteUser(id)
                 .flatMap(userDto -> ServerResponse.noContent().build())
-                .onErrorResume(UserHandler::mapToServerResponse);
+                .onErrorResume(ExceptionMapper::mapToServerResponse);
     }
 
-    private static Mono<? extends ServerResponse> mapToServerResponse(Throwable ex) {
-        if (ex instanceof NotFoundException) {
-            return ServerResponse.notFound().build();
-        }
-
-        log.error("Unhandled error: {}", ex.getMessage(), ex);
-        return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
 }

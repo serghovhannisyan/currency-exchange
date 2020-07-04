@@ -37,6 +37,8 @@ public class SecurityConfig {
                 .pathMatchers("/api/v1/auth/**").permitAll()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority("ADMIN")
+                .pathMatchers(HttpMethod.GET, "/api/v1/currencies/**").authenticated()
+                .pathMatchers("/api/v1/currencies/**").hasAuthority("ADMIN")
                 .anyExchange().authenticated()
                 .and()
                 .build();
