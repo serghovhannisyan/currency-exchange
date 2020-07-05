@@ -1,4 +1,5 @@
 Project Name
+
 Currency Exchange Rate app
 
 An application uses various currency exchange APIs in order to retrieve data and keep and use it later. 
@@ -22,22 +23,18 @@ docker-compose up -d
 
 To Start Server locally without Docker:
 
-remove <scope>test</scope> inside pom.xml
+remove test scope for embedded mongodb inside pom.xml
 and comment application-dev.yml
 then run
 
 mvn spring-boot:run
 
-To Visit App:
-
-localhost:8080
-
 To use REST Api
 
-localhost:9090/api/v1/**
+http://localhost:8080/api/v1/**
 
 Docs are available by this url:
-http://localhost:9090/docs/swagger-ui
+http://localhost:8080/docs/swagger-ui
 
 Application on start-up creates use(admin,password) with ADMIN role
 And adds 2 currencies USD and EUR
