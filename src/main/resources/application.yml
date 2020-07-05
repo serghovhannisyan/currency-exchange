@@ -1,3 +1,7 @@
+spring:
+  profiles:
+    active: dev
+
 app:
   jwt:
     signing-key: somestrongkey
@@ -23,8 +27,3 @@ springdoc:
   api-docs:
     path: /docs/api-docs
   paths-to-match: /api/v1/**
-
-spring:
-  data:
-    mongodb:
-      uri: mongodb://mongo:27017/mydb

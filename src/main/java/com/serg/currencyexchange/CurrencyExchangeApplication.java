@@ -11,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,14 +38,19 @@ public class CurrencyExchangeApplication {
                     new HashSet<>(Arrays.asList(
                             new Role("USER", "Simple role"),
                             new Role("ADMIN", "Privileged role")))))
+                    .onErrorResume(throwable -> {
+                        log.info("Already exist");
+                        return Mono.empty();
+                    })
                     .subscribe(user -> log.info("Admin created"));
 
-            currencyRepository.saveAll(
-                    Arrays.asList(
-                            new Currency(null, "USD", true),
-                            new Currency(null, "EUR", true)))
-                    .doOnComplete(() -> log.info("Currencies created"))
-                    .subscribe();
+            Flux.just(new Currency(null, "USD", true), new Currency(null, "EUR", true))
+                    .flatMap(currencyRepository::save)
+                    .onErrorResume(throwable -> {
+                        log.info("Already exist");
+                        return Mono.empty();
+                    })
+                    .subscribe(currency -> log.info("Currency created"));
         };
     }
 
