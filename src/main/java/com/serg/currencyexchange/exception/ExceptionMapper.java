@@ -15,6 +15,8 @@ public final class ExceptionMapper {
             return ServerResponse.notFound().build();
         } else if (ex instanceof AlreadyExistsException) {
             return ServerResponse.status(HttpStatus.CONFLICT).build();
+        } else if (ex instanceof BadRequestException) {
+            return ServerResponse.badRequest().build();
         }
 
         log.error("Unhandled error: {}", ex.getMessage(), ex);

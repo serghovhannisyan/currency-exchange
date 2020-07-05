@@ -10,5 +10,4 @@ public interface CustomExchangeRateRepository {
 
     Flux<ExchangeRate> findAllByLatestDateAndProvider(ExchangeProvider provider);
 
-    Flux<ExchangeRate> findAllByLatestDateAndBase(String base);
 }

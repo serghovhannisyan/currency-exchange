@@ -4,11 +4,7 @@ import com.serg.currencyexchange.model.ExchangeRate;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 
-import java.time.LocalDateTime;
-
 public interface ExchangeRateRepository extends ReactiveMongoRepository<ExchangeRate, String>, CustomExchangeRateRepository {
 
-    Flux<ExchangeRate> findAllByDate(LocalDateTime date);
-
-    Flux<ExchangeRate> findAllByDateGreaterThan(LocalDateTime date);
+    Flux<ExchangeRate> findAllByDateAndTime(String date, String time);
 }

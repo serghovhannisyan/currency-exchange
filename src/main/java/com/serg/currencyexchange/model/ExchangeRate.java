@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -20,7 +19,8 @@ public class ExchangeRate {
     private String base;
 
     private Map<String, BigDecimal> rates;
-    private LocalDateTime date;
+    private String date;
+    private String time;
 
     @Indexed
     private ExchangeProvider provider;

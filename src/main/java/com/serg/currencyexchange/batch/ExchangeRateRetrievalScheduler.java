@@ -17,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @EnableScheduling
 @Configuration
@@ -45,6 +46,8 @@ public class ExchangeRateRetrievalScheduler {
         Flux<CurrencyResponseDto> currenciesFlux = currencyService.getAll().filter(CurrencyResponseDto::isEnabled);
 
         LocalDateTime currentDate = LocalDateTime.now();
+        String date = currentDate.toLocalDate().toString();
+        String time = currentDate.toLocalTime().toString();
 
         fetchRatesApi(currenciesFlux, currentDate);
         fetchExchangeRateApi(currenciesFlux, currentDate);
@@ -74,14 +77,16 @@ public class ExchangeRateRetrievalScheduler {
 
     private ExchangeRateRequestDto mapToExchangeRateRequestDto(LocalDateTime date, RatesApiResponseDto dto) {
         ExchangeRateRequestDto errDto = exchangeRateMapper.mapToExchangeRateRequestDto(dto);
-        errDto.setDate(date);
+        errDto.setDate(date.toLocalDate().toString());
+        errDto.setTime(date.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
         errDto.setProvider(ExchangeProvider.RATES_API);
         return errDto;
     }
 
     private ExchangeRateRequestDto mapToExchangeRateRequestDto(LocalDateTime date, ExchangeRateApiResponseDto dto) {
         ExchangeRateRequestDto errDto = exchangeRateMapper.mapToExchangeRateRequestDto(dto);
-        errDto.setDate(date);
+        errDto.setDate(date.toLocalDate().toString());
+        errDto.setTime(date.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
         errDto.setProvider(ExchangeProvider.EXCHANGE_RATE_API);
         return errDto;
     }

@@ -14,7 +14,7 @@ public class CustomExchangeRateRepositoryImpl implements CustomExchangeRateRepos
     @Autowired
     private ReactiveMongoTemplate reactiveMongoTemplate;
 
-    private final SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "date");
+    private final SortOperation sortOperation = Aggregation.sort(Sort.Direction.DESC, "date", "time");
     private final GroupOperation groupOperation = Aggregation.group("base", "provider").first("$$ROOT").as("doc");
     private final ReplaceRootOperation replaceRootOperation = Aggregation.replaceRoot().withValueOf("doc");
 
@@ -45,17 +45,4 @@ public class CustomExchangeRateRepositoryImpl implements CustomExchangeRateRepos
         return reactiveMongoTemplate.aggregate(aggregation, ExchangeRate.class, ExchangeRate.class);
     }
 
-    @Override
-    public Flux<ExchangeRate> findAllByLatestDateAndBase(String base) {
-        final MatchOperation matchOperation = Aggregation.match(Criteria.where("provider").is(base));
-
-        Aggregation aggregation = Aggregation.newAggregation(
-                matchOperation,
-                sortOperation,
-                groupOperation,
-                replaceRootOperation
-        );
-
-        return reactiveMongoTemplate.aggregate(aggregation, ExchangeRate.class, ExchangeRate.class);
-    }
 }
