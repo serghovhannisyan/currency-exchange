@@ -5,7 +5,7 @@ app:
     expiration: 86400000
     token-prefix: Bearer
   api-fetch:
-    initial-delay: 60000
+    initial-delay: 10000
     fixed-delay: 600000
 
 currency-exchange:
@@ -16,3 +16,10 @@ currency-exchange:
   rates:
     base-url: https://api.ratesapi.io/api
     path: /latest?base={currency}
+
+springdoc:
+  swagger-ui:
+    path: /docs/swagger-ui
+  api-docs:
+    path: /docs/api-docs
+  paths-to-match: /api/v1/**

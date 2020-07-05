@@ -5,6 +5,7 @@ import com.serg.currencyexchange.dto.CurrencyResponseDto;
 import com.serg.currencyexchange.exception.ExceptionMapper;
 import com.serg.currencyexchange.service.currency.CurrencyService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -33,7 +34,7 @@ public class CurrencyHandler {
     public Mono<ServerResponse> add(ServerRequest request) {
         Mono<CurrencyRequestDto> requestDtoMono = request.bodyToMono(CurrencyRequestDto.class);
         return requestDtoMono.flatMap(currencyService::add)
-                .flatMap(currencyResponseDto -> ServerResponse.ok()
+                .flatMap(currencyResponseDto -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(APPLICATION_JSON)
                         .bodyValue(currencyResponseDto))
                 .onErrorResume(ExceptionMapper::mapToServerResponse);
@@ -43,7 +44,7 @@ public class CurrencyHandler {
         String id = request.pathVariable("id");
         Mono<CurrencyRequestDto> currencyRequestDtoMono = request.bodyToMono(CurrencyRequestDto.class);
         return currencyRequestDtoMono.flatMap(dto -> currencyService.update(id, dto))
-                .flatMap(currencyResponseDto -> ServerResponse.ok()
+                .flatMap(currencyResponseDto -> ServerResponse.accepted()
                         .contentType(APPLICATION_JSON)
                         .bodyValue(currencyResponseDto))
                 .onErrorResume(ExceptionMapper::mapToServerResponse);

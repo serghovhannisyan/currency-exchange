@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
                 .pathMatchers("/api/v1/auth/**").permitAll()
+                .pathMatchers("/docs/**").permitAll()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAuthority("ADMIN")
                 .pathMatchers(HttpMethod.GET, "/api/v1/currencies/**").authenticated()
