@@ -58,7 +58,6 @@ public class ExchangeRateHandlerTest {
                     assertThat(dtoList.get(1).getBase()).isEqualTo(dto2.getBase());
                     assertThat(dtoList.get(1).getProvider()).isEqualTo(dto2.getProvider());
                 });
-
     }
 
     @WithMockUser
@@ -88,7 +87,6 @@ public class ExchangeRateHandlerTest {
                     assertThat(dtoList.get(1).getBase()).isEqualTo(dto2.getBase());
                     assertThat(dtoList.get(1).getProvider()).isEqualTo(dto2.getProvider());
                 });
-
     }
 
     @WithMockUser
@@ -115,7 +113,6 @@ public class ExchangeRateHandlerTest {
                     assertThat(dtoList.get(0).getBase()).isEqualTo(dto2.getBase());
                     assertThat(dtoList.get(0).getProvider()).isEqualTo(dto2.getProvider());
                 });
-
     }
 
     @WithMockUser
@@ -128,6 +125,5 @@ public class ExchangeRateHandlerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest();
-
     }
 }

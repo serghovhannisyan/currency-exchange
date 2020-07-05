@@ -1,93 +1,50 @@
 package com.serg.currencyexchange.batch;
 
-import com.serg.currencyexchange.batch.dto.ExchangeRateApiResponseDto;
-import com.serg.currencyexchange.batch.dto.RatesApiResponseDto;
-import com.serg.currencyexchange.batch.service.CurrencyExchangeApiGrabber;
+import com.serg.currencyexchange.batch.service.Periodic;
 import com.serg.currencyexchange.dto.CurrencyResponseDto;
-import com.serg.currencyexchange.dto.ExchangeRateRequestDto;
-import com.serg.currencyexchange.mapping.ExchangeRateMapper;
-import com.serg.currencyexchange.model.ExchangeProvider;
 import com.serg.currencyexchange.service.currency.CurrencyService;
-import com.serg.currencyexchange.service.exchangerate.ExchangeRateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
+/**
+ * Scheduler responsible for being triggered periodically.
+ * Retrieves currencies from the data source and calls remote APIs in order to fetch new exchange rates
+ * Scheduling can be configured via application properties
+ *
+ * @author Sergey Hovhannisyan
+ */
 @EnableScheduling
 @Configuration
 @Slf4j
 public class ExchangeRateRetrievalScheduler {
 
-    private final CurrencyExchangeApiGrabber<RatesApiResponseDto> ratesApiGrabber;
-    private final CurrencyExchangeApiGrabber<ExchangeRateApiResponseDto> exchangeRateApiGrabber;
     private final CurrencyService currencyService;
-    private final ExchangeRateService exchangeRateService;
-    private final ExchangeRateMapper exchangeRateMapper;
+    private final List<Periodic> periodicList;
 
-    public ExchangeRateRetrievalScheduler(CurrencyExchangeApiGrabber<RatesApiResponseDto> ratesApiGrabber,
-                                          CurrencyExchangeApiGrabber<ExchangeRateApiResponseDto> exchangeRateApiGrabber,
-                                          CurrencyService currencyService, ExchangeRateService exchangeRateService,
-                                          ExchangeRateMapper exchangeRateMapper) {
-        this.ratesApiGrabber = ratesApiGrabber;
-        this.exchangeRateApiGrabber = exchangeRateApiGrabber;
+    public ExchangeRateRetrievalScheduler(CurrencyService currencyService, List<Periodic> periodicList) {
         this.currencyService = currencyService;
-        this.exchangeRateService = exchangeRateService;
-        this.exchangeRateMapper = exchangeRateMapper;
+        this.periodicList = periodicList;
     }
 
     @Scheduled(initialDelayString = "${app.api-fetch.initial-delay}", fixedDelayString = "${app.api-fetch.fixed-delay}")
     public void run() {
-        Flux<CurrencyResponseDto> currenciesFlux = currencyService.getAll().filter(CurrencyResponseDto::isEnabled);
+        final LocalDateTime currentDate = LocalDateTime.now();
 
-        LocalDateTime currentDate = LocalDateTime.now();
-        String date = currentDate.toLocalDate().toString();
-        String time = currentDate.toLocalTime().toString();
-
-        fetchRatesApi(currenciesFlux, currentDate);
-        fetchExchangeRateApi(currenciesFlux, currentDate);
+        // filter could be done inside db, but as currencies are not too much, for now we can use the same service
+        currencyService.getAll()
+                .filter(CurrencyResponseDto::isEnabled)
+                .map(CurrencyResponseDto::getName)
+                .doOnNext(name -> {
+                    log.info("Emitted currency: {}", name);
+                    periodicList.forEach(periodic -> periodic.handleData(name, currentDate));
+                })
+                .doOnComplete(() -> log.info("Finished emitting currencies"))
+                .subscribe();
     }
 
-    private void fetchExchangeRateApi(Flux<CurrencyResponseDto> currenciesFlux, LocalDateTime currentDate) {
-        currenciesFlux
-                .flatMap(currencyResponseDto -> exchangeRateApiGrabber.retrieveData(currencyResponseDto.getName())
-                        .map(dto -> mapToExchangeRateRequestDto(currentDate, dto))
-                        .flatMap(exchangeRateService::add)
-                        .onErrorResume(e -> {
-                            log.error("Failed to retrieve ExchangeRateApi with currency {}", currencyResponseDto.getName(), e);
-                            return Mono.empty();
-                        })).subscribe();
-    }
-
-    private void fetchRatesApi(Flux<CurrencyResponseDto> currenciesFlux, LocalDateTime currentDate) {
-        currenciesFlux
-                .flatMap(currencyResponseDto -> ratesApiGrabber.retrieveData(currencyResponseDto.getName())
-                        .map(dto -> mapToExchangeRateRequestDto(currentDate, dto))
-                        .flatMap(exchangeRateService::add)
-                        .onErrorResume(e -> {
-                            log.error("Failed to retrieve RatesApi with currency {}", currencyResponseDto.getName(), e);
-                            return Mono.empty();
-                        })).subscribe();
-    }
-
-    private ExchangeRateRequestDto mapToExchangeRateRequestDto(LocalDateTime date, RatesApiResponseDto dto) {
-        ExchangeRateRequestDto errDto = exchangeRateMapper.mapToExchangeRateRequestDto(dto);
-        errDto.setDate(date.toLocalDate().toString());
-        errDto.setTime(date.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        errDto.setProvider(ExchangeProvider.RATES_API);
-        return errDto;
-    }
-
-    private ExchangeRateRequestDto mapToExchangeRateRequestDto(LocalDateTime date, ExchangeRateApiResponseDto dto) {
-        ExchangeRateRequestDto errDto = exchangeRateMapper.mapToExchangeRateRequestDto(dto);
-        errDto.setDate(date.toLocalDate().toString());
-        errDto.setTime(date.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        errDto.setProvider(ExchangeProvider.EXCHANGE_RATE_API);
-        return errDto;
-    }
 }

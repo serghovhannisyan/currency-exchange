@@ -1,40 +1,41 @@
-Project Name
+## Project Name
 
 Currency Exchange Rate app
 
 An application uses various currency exchange APIs in order to retrieve data and keep and use it later. 
 Built with Spring Boot, MongoDB(embedded), Spring WebFlux, Docker, OpenApi v3, JUnit 5 and Mockito
 
-Installation and Setup Instructions
+## Installation and Setup Instructions
 Clone down this repository. You will need JDK 8 and Maven installed on your machine.
 Running the app very first time could take some time to download embedded mongodb.
 
-To Run Test Suite:
+## To Run Test Suite:
 
-mvn clean test
+`mvn clean test`
 
-Installation:
+## Installation:
 
-mvn clean install
+`mvn clean install`
 
-To create and run Docker
+## To create and run Docker
 
-docker-compose up -d
+`docker-compose up -d`
 
-To Start Server locally without Docker:
+## To Start Server locally without Docker:
 
 remove test scope for embedded mongodb inside pom.xml
-and comment application-dev.yml
-then run
+and change active profile to local inside application.yml
+and then run
 
-mvn spring-boot:run
+`mvn spring-boot:run`
 
-To use REST Api
+## To use REST Api
 
-http://localhost:8080/api/v1/**
+`http://localhost:9090/api/v1/**`
 
+##  Docs 
 Docs are available by this url:
-http://localhost:8080/docs/swagger-ui
+`http://localhost:9090/docs/swagger-ui`
 
 Application on start-up creates use(admin,password) with ADMIN role
 And adds 2 currencies USD and EUR

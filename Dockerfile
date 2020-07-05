@@ -3,5 +3,5 @@ MAINTAINER sergey
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
-EXPOSE 8080
+EXPOSE 9090
 ENTRYPOINT ["java", "-Dspring.data.mongodb.uri=mongodb://mongo:27017/mydb", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]

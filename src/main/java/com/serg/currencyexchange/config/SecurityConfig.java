@@ -1,5 +1,7 @@
-package com.serg.currencyexchange.security;
+package com.serg.currencyexchange.config;
 
+import com.serg.currencyexchange.security.AuthenticationManager;
+import com.serg.currencyexchange.security.SecurityContextRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

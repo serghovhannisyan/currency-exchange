@@ -22,7 +22,7 @@ public abstract class CurrencyExchangeApiGrabber<T> {
     }
 
     public Mono<T> retrieveData(String currency) {
-        log.info("path {}, currency {}", path, currency);
+        log.info("Retrieving data... path {}, currency {}", path, currency);
         return webClient.get()
                 .uri(path, currency)
                 .retrieve()
