@@ -5,8 +5,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @Document
@@ -18,8 +19,8 @@ public class ExchangeRate {
     @Indexed
     private String base;
 
-    private List<Rate> rates;
-    private LocalDate date;
+    private Map<String, BigDecimal> rates;
+    private LocalDateTime date;
 
     @Indexed
     private ExchangeProvider provider;
