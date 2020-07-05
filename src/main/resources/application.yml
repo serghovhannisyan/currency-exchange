@@ -4,6 +4,9 @@ app:
     claim-name: scopes
     expiration: 86400000
     token-prefix: Bearer
+  api-fetch:
+    initial-delay: 60000
+    fixed-delay: 600000
 
 currency-exchange:
   exchange-rate:

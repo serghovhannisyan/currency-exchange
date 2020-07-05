@@ -41,8 +41,7 @@ public class CurrencyExchangeApplication {
             currencyRepository.saveAll(
                     Arrays.asList(
                             new Currency(null, "USD", true),
-                            new Currency(null, "EUR", true),
-                            new Currency(null, "AMD", true)))
+                            new Currency(null, "EUR", true)))
                     .doOnComplete(() -> log.info("Currencies created"))
                     .subscribe();
         };
