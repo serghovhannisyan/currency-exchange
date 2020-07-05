@@ -38,9 +38,8 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         String authToken = null;
         if (authHeader != null && authHeader.startsWith(jwtTokenPrefix)) {
             authToken = authHeader.replace(jwtTokenPrefix, "");
-        } else {
-            log.warn("couldn't find bearer string, will ignore the header.");
         }
+
         if (authToken != null) {
             Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
             return this.authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
